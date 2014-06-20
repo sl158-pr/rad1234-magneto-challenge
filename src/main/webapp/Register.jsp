@@ -1,6 +1,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>a
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
@@ -8,7 +8,7 @@
 <title>Magneto Customer Registration Web Service</title>
 <meta name="description" content="Default Description" />
 <link href="css/styles.css" rel="stylesheet" type="text/css"></link>
-<script type="text/javascript" src="javaScript/script.js"></script>
+
 </head>
 <body>
 <div class="pagebody">
@@ -28,17 +28,17 @@
 					<div style="width:100%">
 						<div style="width:49%;float:left;">
 							<div style="width:45%; "> <label> First Name <em>*</em> </label></div>
-							<div style="width:50%"><input type="text" name="fname" id="fname"/></div>
+							<div style="width:50%"><input type="text" name="firstName" id="firstName" value="${param.firstName}" /></div>
 						</div>
 						<div style="width:49%; float:left;">
 							<div style="width:45%; "> <label> Last Name <em>*</em> </label></div>
-							<div style="width:50%"><input type="text" name="lname" id="lname"/></div>
+							<div style="width:50%"><input type="text" name="lastName" id="lastName" value="${param.lastName}" /></div>
 						</div>
 					</div>
 					<div style="width:100%">
 						<div style="width:100%;float:left;">
 							<div style="width:45%; "> <label> Email Address <em>*</em> </label></div>
-							<div style="width:50%"><input type="text" name="email" id="email"/></div>
+							<div style="width:50%"><input type="email" name="email" id="email" value="${param.email}" /></div>
 						</div>
 					</div>
 					<div style="width:100% float:left;">
@@ -53,11 +53,11 @@
 					<div style="width:100%">
 						<div style="width:49%;float:left;">
 							<div style="width:45%; "> <label> Password <em>*</em> </label></div>
-							<div style="width:50%"><input type="password" name="password" id="password"/></div>
+							<div style="width:50%"><input type="password" name="password" id="password" /></div>
 						</div>
 						<div style="width:49%; float:left;">
 							<div style="width:45%; "> <label> Confirm Password <em>*</em> </label></div>
-							<div style="width:50%"><input type="password" name="confirmPassword" id="confirmPassword"/></div>
+							<div style="width:50%"><input type="password" name="password2" id="password2" /></div>
 						</div>
 					</div>
 				</fieldset>
