@@ -1,9 +1,7 @@
-/**
- * 
- */
 package com.sumanth.magneto;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,118 +23,125 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
-
 /**
- * Middleman form submit servlet which acts as a proxy for creating users within a
- * Magento system.  Form data is submitted to this servlet to create a user.  This servlet 
- * in turn repackages the form POST data and performs a POST on behalf of the user/system
- * to a Magento system, utilizing the same HTML POST endpoints as the Magento system's
- * own create user form submit.
+ * Class Name: RegistrationServletClass.java
  * 
- * Upon successful user creation, the user is created in the remote Magento system with
- * newsletter preferences set.
+ * Servlet to post the data to suitable end point on
+ * http://myopenissues.com/magento/index.php and then parse the response and
+ * display proper error message or success on your displayed form. i.e. the
+ * servelet is sitting in between the user and http://myopenissues.com/magento/
+ * and processing the input and return.
  * 
- * Upon failure, any error messages provided by the Magento system, via HTML scraping, are
- * relayed to this system's create user form.
- * 
- * Please note that this approach is not the recommended approach to acting as a proxy to
- * Nagento system operations.  This approach was required due to a lack of credentials to the
- * web services exposed by Magento.  A more appropriate approach is, having credentials, to use
- * either the SOAP web service endpoint customerCustomerCreate as defined by the WSDL 
- * (http://magentohost/api/v2_soap?wsdl=1).
- * 
- * @author stevefink
- *
+ * @author Sumanth Lakshminarayana, UTA ID: 1000830230
  */
+
 @SuppressWarnings("serial")
 public class RegistrationServletClass extends HttpServlet {
-	public static final String HOST = "http://myopenissues.com";
-	public static final String FORM_PATH = "/magento/index.php/customer/account/create/";
-	public static final String POST_PATH = "/magento/index.php/customer/account/createpost/";
-	
-	public static final String PARAM_EMAIL = "email";
-	public static final String PARAM_FIRSTNAME = "firstname";
-	public static final String PARAM_FIRST_NAME = "firstName";
-	public static final String PARAM_LASTNAME = "lastname";
-	public static final String PARAM_LAST_NAME = "lastName";
-	public static final String PARAM_NEWSLETTER = "newsletter";
-	public static final String PARAM_SUBSCRIBE = "is_subscribed";
-	public static final String PARAM_PASSWORD = "password";
-	public static final String PARAM_PASSWORD_2 = "password2";
-	public static final String PARAM_CONFIRMATION = "confirmation";
-	public static final String PARAM_SUCCESS_URL = "success_url";
-	public static final String PARAM_ERROR_URL = "error_url";
-	
-	public static final String VALUE_ON = "on";
-	public static final String VALUE_ONE = "1";
-	
+
+	public static final String SUCCESS_PARAMETER = "success";
+	public static final String MESSAGE_ATTRIBUTE = "messages";
+
+	public static final String URL = "http://myopenissues.com";
+	public static final String URL_PATH = "/magento/index.php/customer/account/create/";
+	public static final String URL_POST = "/magento/index.php/customer/account/createpost/";
+
 	public static final String LOCATION = "location";
-	public static final String DOM_MATCH_MESSAGES = "ul.messages";
-	
-	public static final String ATTRIBUTE_SUCCESS = "success";
-	public static final String ATTRIBUTE_MESSAGES = "messages";
+	public static final String DOM_MESSAGES = "ul.messages";
+
+	public static final String NEWSLETTER_STATUS_ON = "on";
+	public static final String VALUE_ONE = "1";
+
+	public static final String FIRSTNAME = "firstname";
+	public static final String LASTNAME = "lastname";
+	public static final String EMAIL = "email";
+	public static final String NEWSLETTER = "newsletter";
+	public static final String SUBSCRIBE = "is_subscribed";
+	public static final String PASSWORD = "password";
+	public static final String PASSWORD_2 = "password2";
+	public static final String CONFIRMPASSWORD = "confirmation";
+	public static final String SUCCESS_URL = "success_url";
+	public static final String ERROR = "error_url";
 
 	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-			throws ServletException, IOException {
-		
-		//prepare POST data
-		String formUrl = HOST + FORM_PATH;
-		String postUrl = HOST + POST_PATH;
-		HttpClient client = HttpClientBuilder.create().build();
-		HttpPost post = new HttpPost(postUrl);
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair(PARAM_EMAIL, req.getParameter(PARAM_EMAIL)));
-		params.add(new BasicNameValuePair(PARAM_FIRSTNAME, req.getParameter(PARAM_FIRST_NAME)));
-		params.add(new BasicNameValuePair(PARAM_LASTNAME, req.getParameter(PARAM_LAST_NAME)));
-		String newsletter = req.getParameter(PARAM_NEWSLETTER);
-		if (newsletter != null && newsletter.equalsIgnoreCase(VALUE_ON)) {
-			params.add(new BasicNameValuePair(PARAM_SUBSCRIBE, VALUE_ONE));
-		}
-		params.add(new BasicNameValuePair(PARAM_PASSWORD, req.getParameter(PARAM_PASSWORD)));
-		params.add(new BasicNameValuePair(PARAM_CONFIRMATION, req.getParameter(PARAM_PASSWORD_2)));
-		params.add(new BasicNameValuePair(PARAM_SUCCESS_URL, ""));
-		params.add(new BasicNameValuePair(PARAM_ERROR_URL, ""));
-		
-		post.setEntity(new UrlEncodedFormEntity(params));
-		
-		//make initial connection to Magento to obtain a sessionId; wihtout this step the form
-		//submit will not success as there is no valid session to post data within
-		client.execute(new HttpGet(formUrl));
-		//POST customer create data
-		HttpResponse response = client.execute(post);
-		//release the connection to free up resources
-		post.releaseConnection();
-		
-		//process response from POST to determine success state
-		Boolean ret = null;
-		//read through header elements to find "location" which will inform us on the success state
-		for (Header header : response.getAllHeaders()) {
-			if (header.getName().equalsIgnoreCase(LOCATION)) {
-				//check for location value equal to original form URL; this would indicate an error
-				if (header.getValue().equalsIgnoreCase(formUrl)) {
-					ret = false;	//set unsuccess state
-					//follow redirect to form to obtain error messages
-					HttpResponse redirect = client.execute(new HttpGet(header.getValue()));
-					//scrape HTML for error messages
-					Document dom = Jsoup.parse(redirect.getEntity().getContent(), null, header.getValue());
-					Elements messages = dom.select(DOM_MATCH_MESSAGES);
-					//add messages HTML to request attribute for use by renderers
-					req.setAttribute(ATTRIBUTE_MESSAGES, messages.html());
+	protected void doPost(HttpServletRequest httpRequest,
+			HttpServletResponse httpResponse) throws ServletException,
+			IOException {
+		try {
+
+			// Initialize the post data
+			String formUrl = URL + URL_PATH;
+			String postUrl = URL + URL_POST;
+			HttpClient client = HttpClientBuilder.create().build();
+			HttpPost post = new HttpPost(postUrl);
+			String firstName = httpRequest.getParameter(FIRSTNAME);
+			String lastName = httpRequest.getParameter(LASTNAME);
+			String email = httpRequest.getParameter(EMAIL);
+			String newsLetter = httpRequest.getParameter(NEWSLETTER);
+			String password = httpRequest.getParameter(PASSWORD);
+			String password2 = httpRequest.getParameter(PASSWORD_2);
+
+			List<NameValuePair> formData = getFormParams(firstName, lastName,
+					email, newsLetter, password, password2);
+
+			post.setEntity(new UrlEncodedFormEntity(formData));
+
+			// obtaining session ID
+			client.execute(new HttpGet(formUrl));
+			// sending/posting the user information
+			HttpResponse response = client.execute(post);
+			// release connection to free resources
+			post.releaseConnection();
+
+			// process response from POST to determine success state
+			Boolean successState = null;
+
+			for (Header header : response.getAllHeaders()) {
+				if (header.getName().equalsIgnoreCase(LOCATION)) {
+					// check on location url to determine the success
+					if (header.getValue().equalsIgnoreCase(formUrl)) {
+						successState = false;
+						// set the error messages
+						HttpResponse redirect = client.execute(new HttpGet(
+								header.getValue()));
+						Document dom = Jsoup.parse(redirect.getEntity()
+								.getContent(), null, header.getValue());
+						Elements messages = dom.select(DOM_MESSAGES);
+						httpRequest.setAttribute(MESSAGE_ATTRIBUTE,
+								messages.html());
+					} else {
+						successState = true;
+					}
+					break;
 				}
-				else {	//redirect header location value is not the form URL; success condition
-					ret = true;
-				}
-				break;
 			}
+			httpRequest.setAttribute(SUCCESS_PARAMETER, successState);
+			httpRequest.getRequestDispatcher("/").forward(httpRequest,
+					httpResponse);
+		} catch (Exception e1) {
+			e1.printStackTrace();
 		}
-		
-		//set success state into request attribute for renderer
-		req.setAttribute(ATTRIBUTE_SUCCESS, ret);
-		//forward to renderer
-		req.getRequestDispatcher("/").forward(req, resp);
 	}
 
-	
+	public List<NameValuePair> getFormParams(String firstname, String lastname,
+			String email, String newsletter, String password,
+			String confirmationPassword) throws UnsupportedEncodingException {
+		List<NameValuePair> paramList = new ArrayList<NameValuePair>();
+
+		paramList.add(new BasicNameValuePair(FIRSTNAME, firstname));
+		paramList.add(new BasicNameValuePair(LASTNAME, lastname));
+		paramList.add(new BasicNameValuePair(EMAIL, email));
+
+		if (newsletter != null
+				&& newsletter.equalsIgnoreCase(NEWSLETTER_STATUS_ON)) {
+			paramList.add(new BasicNameValuePair(SUBSCRIBE, VALUE_ONE));
+		}
+		paramList.add(new BasicNameValuePair(PASSWORD, password));
+		paramList.add(new BasicNameValuePair(CONFIRMPASSWORD,
+				confirmationPassword));
+		paramList.add(new BasicNameValuePair(SUCCESS_URL, ""));
+		paramList.add(new BasicNameValuePair(ERROR, ""));
+
+		return paramList;
+	}
 
 }

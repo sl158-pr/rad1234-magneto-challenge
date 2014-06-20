@@ -13,12 +13,12 @@
 <body>
 <div class="pagebody">
 		<div class="page-title">
-			<h1>Create an Account</h1>
+			<h2>Magneto Registration</h2>
 </div>
 <c:if test="${!empty messages}">
 <ul><c:out value="${messages}" escapeXml="false" /></ul>
 </c:if>
-<c:if test="${!empty success && success}"><h1>User Successfully Created</h1></c:if>
+<c:if test="${!empty success && success}"><h3>User Successfully Created</h3></c:if>
 <c:if test="${empty success || !success}">
 	
 		<form action="${pageContext.request.contextPath}/submit" method="post">
@@ -63,8 +63,7 @@
 				</fieldset>
 			</div>
 			<div>&nbsp;</div>
-			<div id="errMessage" style="color:red;"></div>
-			<div id="successMessage" ></div>
+	
 			
 			
 			<div style="width:100%;text-align:center;">
