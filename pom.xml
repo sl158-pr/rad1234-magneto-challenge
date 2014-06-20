@@ -74,7 +74,9 @@
         <artifactId>maven-jetty-plugin</artifactId>
         <version>6.1.10</version>
         <configuration>
+		<webApp>
         <contextPath>/rad1234</contextPath> 
+		</webApp>
           <scanIntervalSeconds>10</scanIntervalSeconds>
           <connectors>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
