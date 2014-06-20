@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>Login Page</title>
+<title>Registration</title>
 <style>
 /* Basics */
 html,body {
@@ -16,8 +16,8 @@ html,body {
 
 #container {
 	position: fixed;
-	width: 340px;
-	height: 280px;
+	width: 470px;
+	height: 580px;
 	top: 50%;
 	left: 50%;
 	margin-top: -140px;
@@ -176,16 +176,25 @@ input[type=submit]:active {
 
 	<!-- Begin Page Content -->
 	<div id="container">
-		<form method="post" action="SignUp">
-			<input type="hidden" name="flag" value="0" /> <label for="username">Email:</label>
-			<input type="text" name="regEmail" value="" /> <label for="password">Password:</label>
-			<input type="password" name="regpass" value="" />
+	<h2> Magneto Clone SignUp</h2>
+	
+		 <form method="post" action="SignUp">
+         <input type="hidden" name="flag" value="1" />
+		<label for="username">First Name:</label>
+			<input type="text" name="fname" value="" /> <br>
+			<label for="password">Last Name:</label>
+			<input type="text" name="lname" value="" /><br>
+			<label for="username">Email</label>
+			<input type="text" name="email" value="" /><br>
+			<label for="password">Password</label>
+			<input type="password" name="pass" value="" /><br>
+			<label for="password">Confirm Password</label>
+			<input type="password" name="conpass" value="" /><br>
+			
 			<div id="lower">
-				<input type="submit" value="Login" /> <input type="reset"
-					value="Reset" class="reset" /> <a href="Register.jsp">Create
-					an Account</a>
+				<input type="submit" value="Submit" /><input type="reset"
+					value="Reset" class="reset" /> <a href="index.jsp">Member Login</a>
 			</div>
-			<!--/ lower-->
 		</form>
 	</div>
 	<!--/ container-->
