@@ -1,0 +1,16 @@
+.fieldset {
+    background: none repeat scroll 0 0 #FBFAF6;
+    border: 1px solid #BBAFA0;
+    margin: 28px 0;
+    padding: 22px 25px 12px 33px;
+}
+
+.pagebody {
+	background: #FFF8F8; 
+	width: 70%;
+	border:1px solid  #BBAFA0;
+}
+
+.outerLine {
+	width:49%;float:left;
+}
