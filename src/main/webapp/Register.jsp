@@ -28,11 +28,11 @@
 					<div style="width:100%">
 						<div style="width:49%;float:left;">
 							<div style="width:45%; "> <label> First Name <em>*</em> </label></div>
-							<div style="width:50%"><input type="text" name="firstName" id="firstName" value="${param.firstName}" /></div>
+							<div style="width:50%"><input type="text" name="firstname" id="firstname" value="${param.firstname}" /></div>
 						</div>
 						<div style="width:49%; float:left;">
 							<div style="width:45%; "> <label> Last Name <em>*</em> </label></div>
-							<div style="width:50%"><input type="text" name="lastName" id="lastName" value="${param.lastName}" /></div>
+							<div style="width:50%"><input type="text" name="lastname" id="lastname" value="${param.lastname}" /></div>
 						</div>
 					</div>
 					<div style="width:100%">
