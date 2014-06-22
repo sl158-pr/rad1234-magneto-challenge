@@ -106,8 +106,10 @@ public class RegistrationServletClass extends HttpServlet {
 						Document dom = Jsoup.parse(redirect.getEntity()
 								.getContent(), null, header.getValue());
 						Elements messages = dom.select(DOM_MESSAGES);
-						httpRequest.setAttribute(MESSAGE_ATTRIBUTE,
-								messages.html());
+						String htmlMessages=messages.html();
+						if(htmlMessages.contains("<li>"))
+							htmlMessages=htmlMessages.substring(htmlMessages.indexOf("<li>"),htmlMessages.indexOf("</ul></li>"));
+						httpRequest.setAttribute(MESSAGE_ATTRIBUTE,		htmlMessages);
 					} else {
 						successState = true;
 					}
@@ -115,8 +117,7 @@ public class RegistrationServletClass extends HttpServlet {
 				}
 			}
 			httpRequest.setAttribute(SUCCESS_PARAMETER, successState);
-			httpRequest.getRequestDispatcher("/").forward(httpRequest,
-					httpResponse);
+			httpRequest.getRequestDispatcher("/").forward(httpRequest,		httpResponse);
 		} catch (Exception e1) {
 			e1.printStackTrace();
 		}
@@ -143,5 +144,4 @@ public class RegistrationServletClass extends HttpServlet {
 
 		return paramList;
 	}
-
 }
